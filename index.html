@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisionAI — Live Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="material-symbols-outlined logo-icon">visibility</span>
+      <span class="logo-text">VisionAI</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item active">
+        <span class="material-symbols-outlined">sensors</span> Live Feed
+      </a>
+      <a href="gallery.html" class="nav-item">
+        <span class="material-symbols-outlined">photo_library</span> Gallery
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <span class="material-symbols-outlined">insights</span> Analytics
+      </a>
+      <a href="settings.html" class="nav-item">
+        <span class="material-symbols-outlined">tune</span> Settings
+      </a>
+    </nav>
+    <div class="sidebar-stats">
+      <div class="stat-label">TOTAL DETECTED</div>
+      <div class="stat-value" id="sidebar-total">00</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="material-symbols-outlined topbar-icon">visibility</span>
+        <span class="topbar-title">VisionAI</span>
+        <span class="status-indicator">
+          <span class="status-ping" id="status-ping"></span>
+          <span class="status-dot" id="status-dot"></span>
+        </span>
+      </div>
+      <div class="topbar-right">
+        <span class="status-text" id="status-text">FEED INACTIVE</span>
+        <span class="material-symbols-outlined topbar-rec">fiber_manual_record</span>
+      </div>
+    </header>
+
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid">
+
+      <!-- VIDEO SECTION -->
+      <section class="video-section">
+
+        <!-- Feed -->
+        <div class="video-wrapper">
+          <video id="webcam" autoplay muted playsinline></video>
+          <canvas id="overlay"></canvas>
+          <div class="scanline" id="scanline-overlay"></div>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="empty-state">
+            <span class="material-symbols-outlined empty-icon">videocam_off</span>
+            <p class="empty-title">NO CAMERA ACTIVE</p>
+            <p class="empty-sub">Press START DETECTION to begin</p>
+          </div>
+
+          <!-- Detection badges -->
+          <div class="detection-badges" id="detection-badges"></div>
+
+          <!-- Latency -->
+          <div class="latency-badge" id="latency-badge">
+            <div class="latency-label">LATENCY</div>
+            <div class="latency-value" id="latency">--ms</div>
+          </div>
+        </div>
+
+        <!-- Wellbeing Module -->
+        <div class="card wellness-card">
+          <h3 class="card-title">
+            <span class="material-symbols-outlined">favorite</span>
+            WELLBEING ANALYSIS
+          </h3>
+          <div class="wellness-grid">
+            <div class="wellness-item">
+              <div class="wellness-emoji" id="emotion-icon">😐</div>
+              <div class="wellness-sub">EMOTION</div>
+              <div class="wellness-val" id="emotion-label">NEUTRAL</div>
+            </div>
+            <div class="wellness-item">
+              <div class="ring-wrapper">
+                <svg class="ring-svg" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3"/>
+                  <circle id="fatigue-ring" cx="18" cy="18" r="15.9" fill="none" stroke="#7dffa2"
+                    stroke-width="3" stroke-dasharray="0 100" stroke-linecap="round"
+                    style="transform: rotate(-90deg); transform-origin: 50% 50%;"/>
+                </svg>
+                <span class="ring-value" id="fatigue-value">--</span>
+              </div>
+              <div class="wellness-sub">ALERTNESS</div>
+              <div class="wellness-val" id="fatigue-label">UNKNOWN</div>
+            </div>
+            <div class="wellness-item">
+              <div class="wellness-emoji" id="posture-icon">🧍</div>
+              <div class="wellness-sub">POSTURE</div>
+              <div class="wellness-val" id="posture-label">UNKNOWN</div>
+            </div>
+          </div>
+          <div class="wellness-alert hidden" id="wellness-alert">
+            <span class="material-symbols-outlined alert-icon">warning</span>
+            <span id="wellness-alert-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTROLS PANEL -->
+      <section class="controls-panel">
+
+        <!-- Actions Card -->
+        <div class="card">
+          <div class="btn-group">
+            <button id="toggle-btn" class="btn btn-start" onclick="toggleDetection()">
+              <span class="material-symbols-outlined">power_settings_new</span>
+              START DETECTION
+            </button>
+            <button class="btn btn-secondary" onclick="switchCamera()">
+  <span class="material-symbols-outlined">flip_camera_android</span>
+  SWITCH CAMERA
+</button>
+            <button class="btn btn-secondary" onclick="captureScreenshot()">
+              <span class="material-symbols-outlined">photo_camera</span>
+              CAPTURE SCREENSHOT
+            </button>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="slider-label">CONFIDENCE THRESHOLD</label>
+              <span class="slider-val" id="threshold-val">75%</span>
+            </div>
+            <input type="range" id="threshold" min="0" max="100" value="75" class="slider"
+              oninput="document.getElementById('threshold-val').textContent = this.value + '%'"/>
+          </div>
+
+          <div class="modules-group">
+            <div class="modules-title">DETECTION MODULES</div>
+            <label class="module-toggle">
+              <span>Objects (COCO-SSD)</span>
+              <input type="checkbox" id="toggle-objects" checked/>
+            </label>
+            <label class="module-toggle">
+              <span>Wellbeing (Face-API)</span>
+              <input type="checkbox" id="toggle-wellness" checked/>
+            </label>
+          </div>
+        </div>
+
+        <!-- Objects List Card -->
+        <div class="card objects-card">
+          <h3 class="card-title">
+            <span class="material-symbols-outlined">list</span>
+            DETECTED OBJECTS
+          </h3>
+          <div id="objects-list" class="objects-list">
+            <div class="objects-empty">
+              <span class="objects-empty-text">SCANNING FOR OBJECTS...</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-item active">
+        <span class="material-symbols-outlined">sensors</span>
+        <span>LIVE</span>
+      </a>
+      <a href="gallery.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">photo_library</span>
+        <span>GALLERY</span>
+      </a>
+      <a href="analytics.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">insights</span>
+        <span>STATS</span>
+      </a>
+      <a href="settings.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">tune</span>
+        <span>TUNE</span>
+      </a>
+    </nav>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

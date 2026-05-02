@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisionAI — Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="material-symbols-outlined logo-icon">visibility</span>
+      <span class="logo-text">VisionAI</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item">
+        <span class="material-symbols-outlined">sensors</span> Live Feed
+      </a>
+      <a href="gallery.html" class="nav-item">
+        <span class="material-symbols-outlined">photo_library</span> Gallery
+      </a>
+      <a href="analytics.html" class="nav-item active">
+        <span class="material-symbols-outlined">insights</span> Analytics
+      </a>
+      <a href="settings.html" class="nav-item">
+        <span class="material-symbols-outlined">tune</span> Settings
+      </a>
+    </nav>
+    <div class="sidebar-stats">
+      <div class="stat-label">SESSION</div>
+      <div class="stat-value" id="session-time">00:00</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="material-symbols-outlined topbar-icon">visibility</span>
+        <span class="topbar-title">VisionAI</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" onclick="exportReport()" title="Export">
+          <span class="material-symbols-outlined">ios_share</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ANALYTICS CONTENT -->
+    <div class="page-content">
+
+      <h2 class="page-title">Analytics</h2>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card glow-purple border-accent">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL DETECTIONS</span>
+            <span class="material-symbols-outlined kpi-icon purple">troubleshoot</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpi-total">0</span>
+            <span class="kpi-badge green">SESSION</span>
+          </div>
+          <div class="kpi-bar-bg"><div class="kpi-bar purple" id="kpi-total-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="kpi-card glow-green border-green">
+          <div class="kpi-header">
+            <span class="kpi-label">AVG. CONFIDENCE</span>
+            <span class="material-symbols-outlined kpi-icon green">verified</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpi-confidence">--%</span>
+            <span class="kpi-badge muted">STABLE</span>
+          </div>
+          <div class="kpi-bar-bg"><div class="kpi-bar green" id="kpi-confidence-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="kpi-card border-primary">
+          <div class="kpi-header">
+            <span class="kpi-label">SNAPSHOTS TAKEN</span>
+            <span class="material-symbols-outlined kpi-icon primary">photo_camera</span>
+          </div>
+          <div class="kpi-value-row">
+            <span class="kpi-value" id="kpi-snapshots">0</span>
+            <span class="kpi-badge muted">SAVED</span>
+          </div>
+          <div class="kpi-bar-bg"><div class="kpi-bar primary" id="kpi-snapshots-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Chart + Categories -->
+      <div class="analytics-grid">
+
+        <!-- Chart -->
+        <div class="card chart-card">
+          <div class="chart-header">
+            <h3 class="card-title">
+              <span class="material-symbols-outlined">timeline</span>
+              Detections over time
+            </h3>
+            <span class="chip active" style="cursor:default;">LIVE</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="detection-chart" width="600" height="250"></canvas>
+            <div class="chart-x-labels">
+              <span id="chart-label-0">--</span>
+              <span id="chart-label-1">--</span>
+              <span id="chart-label-2">--</span>
+              <span id="chart-label-3">--</span>
+              <span id="chart-label-4">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Categories -->
+        <div class="card">
+          <h3 class="card-title">
+            <span class="material-symbols-outlined">bar_chart</span>
+            TOP CATEGORIES
+          </h3>
+          <div class="categories-list" id="categories-list">
+            <div class="category-empty">
+              <span class="objects-empty-text">NO DATA YET — START DETECTION</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Export Button -->
+      <div style="display:flex; justify-content:center; padding: 24px 0;">
+        <button class="btn btn-start" onclick="exportReport()">
+          <span class="material-symbols-outlined">ios_share</span>
+          EXPORT SESSION REPORT
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">sensors</span>
+        <span>LIVE</span>
+      </a>
+      <a href="gallery.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">photo_library</span>
+        <span>GALLERY</span>
+      </a>
+      <a href="analytics.html" class="bottom-nav-item active">
+        <span class="material-symbols-outlined">insights</span>
+        <span>STATS</span>
+      </a>
+      <a href="settings.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">tune</span>
+        <span>TUNE</span>
+      </a>
+    </nav>
+
+  </main>
+
+  <script src="analytics.js"></script>
+</body>
+</html>

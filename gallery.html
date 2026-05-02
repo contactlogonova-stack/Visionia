@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisionAI — Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="material-symbols-outlined logo-icon">visibility</span>
+      <span class="logo-text">VisionAI</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item">
+        <span class="material-symbols-outlined">sensors</span> Live Feed
+      </a>
+      <a href="gallery.html" class="nav-item active">
+        <span class="material-symbols-outlined">photo_library</span> Gallery
+      </a>
+      <a href="analytics.html" class="nav-item">
+        <span class="material-symbols-outlined">insights</span> Analytics
+      </a>
+      <a href="settings.html" class="nav-item">
+        <span class="material-symbols-outlined">tune</span> Settings
+      </a>
+    </nav>
+    <div class="sidebar-stats">
+      <div class="stat-label">SNAPSHOTS</div>
+      <div class="stat-value" id="gallery-count">0</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="material-symbols-outlined topbar-icon">visibility</span>
+        <span class="topbar-title">VisionAI</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" onclick="clearGallery()" title="Clear all">
+          <span class="material-symbols-outlined">delete_sweep</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- GALLERY CONTENT -->
+    <div class="page-content">
+
+      <!-- Search & Filters -->
+      <section class="gallery-header">
+        <h2 class="page-title">Snapshot Gallery</h2>
+        <div class="search-bar">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" placeholder="Search objects, tags..." class="search-input" id="gallery-search" oninput="filterGallery(this.value)"/>
+        </div>
+      </section>
+
+      <!-- Filter Chips -->
+      <div class="filter-chips">
+        <span class="chip active" onclick="filterByTag('all', this)">ALL TIME</span>
+        <span class="chip" onclick="filterByTag('person', this)">PERSON</span>
+        <span class="chip" onclick="filterByTag('car', this)">CAR</span>
+        <span class="chip" onclick="filterByTag('alert', this)">ALERTS</span>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- Empty state -->
+        <div class="gallery-empty" id="gallery-empty">
+          <span class="material-symbols-outlined empty-icon">photo_library</span>
+          <p class="empty-title">NO SNAPSHOTS YET</p>
+          <p class="empty-sub">Go to Live Feed and capture screenshots</p>
+          <a href="index.html" class="btn btn-start" style="margin-top:16px; text-decoration:none; display:inline-flex;">
+            <span class="material-symbols-outlined">sensors</span>
+            OPEN LIVE FEED
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">sensors</span>
+        <span>LIVE</span>
+      </a>
+      <a href="gallery.html" class="bottom-nav-item active">
+        <span class="material-symbols-outlined">photo_library</span>
+        <span>GALLERY</span>
+      </a>
+      <a href="analytics.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">insights</span>
+        <span>STATS</span>
+      </a>
+      <a href="settings.html" class="bottom-nav-item">
+        <span class="material-symbols-outlined">tune</span>
+        <span>TUNE</span>
+      </a>
+    </nav>
+
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <img id="lightbox-img" src="" alt="Snapshot"/>
+      <div class="lightbox-meta" id="lightbox-meta"></div>
+      <a id="lightbox-download" download="visionai-snapshot.png" class="btn btn-secondary" style="margin-top:12px;">
+        <span class="material-symbols-outlined">download</span>
+        DOWNLOAD
+      </a>
+    </div>
+  </div>
+
+  <script src="gallery.js"></script>
+</body>
+</html>
