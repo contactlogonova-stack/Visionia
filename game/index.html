@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisionAI — Gesture Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a0f;
+      color: #e4e1ed;
+      font-family: 'Space Grotesk', sans-serif;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      background: rgba(10,10,15,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6c63ff;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: #918fa1; font-size: 12px; letter-spacing: 0.06em;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .back-btn:hover { color: white; }
+    .material-symbols-outlined { font-size: 18px; vertical-align: middle; }
+
+    /* GAME WRAPPER */
+    .game-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* WEBCAM */
+    #webcam {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+      transform: scaleX(-1);
+    }
+
+    /* CANVAS JEU */
+    #game-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* CANVAS HANDS OVERLAY */
+    #hands-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: scaleX(-1);
+    }
+
+    /* HUD */
+    .hud {
+      position: absolute;
+      top: 16px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .hud-card {
+      background: rgba(10,10,15,0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 18px;
+      text-align: center;
+    }
+    .hud-label {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: #918fa1;
+      text-transform: uppercase;
+    }
+    .hud-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.1;
+    }
+    .hud-value.green { color: #7dffa2; }
+    .hud-value.purple { color: #6c63ff; }
+
+    /* COMBO */
+    #combo-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: 700;
+      color: #ffd740;
+      text-shadow: 0 0 20px rgba(255,215,64,0.8);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 6;
+    }
+
+    /* GESTURE HINT */
+    #gesture-hint {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(108,99,255,0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: white;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    /* SCREENS */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 20;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(20px);
+    }
+    .screen.hidden { display: none; }
+
+    .screen-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+    }
+    .screen-sub {
+      font-size: 14px;
+      color: #918fa1;
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.6;
+    }
+    .screen-score {
+      font-size: 72px;
+      font-weight: 700;
+      color: #7dffa2;
+      text-shadow: 0 0 30px rgba(125,255,162,0.5);
+    }
+    .btn-game {
+      background: #7dffa2;
+      color: #003918;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 999px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn-game:hover { transform: scale(1.03); }
+    .btn-game.secondary {
+      background: transparent;
+      color: #c4c0ff;
+      border: 1px solid rgba(196,192,255,0.3);
+    }
+
+    /* LIVES */
+    .lives {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .heart { font-size: 18px; transition: all 0.3s; }
+    .heart.lost { opacity: 0.2; filter: grayscale(1); }
+
+    /* LOADING */
+    #loading-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 30;
+      background: #0a0a0f;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(108,99,255,0.2);
+      border-top-color: #6c63ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: #918fa1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a href="../index.html" class="back-btn">
+      <span class="material-symbols-outlined">arrow_back</span>
+      BACK TO VISIONAI
+    </a>
+    <div class="topbar-left">
+      <span class="material-symbols-outlined" style="color:#6c63ff;">sports_esports</span>
+      <span class="topbar-title">Gesture Game</span>
+    </div>
+    <div style="width:120px;"></div>
+  </header>
+
+  <!-- GAME WRAPPER -->
+  <div class="game-wrapper">
+
+    <video id="webcam" autoplay muted playsinline></video>
+    <canvas id="game-canvas"></canvas>
+    <canvas id="hands-canvas"></canvas>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-card">
+        <div class="hud-label">Score</div>
+        <div class="hud-value green" id="score">0</div>
+      </div>
+      <div class="hud-card">
+        <div class="hud-label">Lives</div>
+        <div class="lives" id="lives">
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+        </div>
+      </div>
+      <div class="hud-card">
+        <div class="hud-label">Level</div>
+        <div class="hud-value purple" id="level">1</div>
+      </div>
+      <div class="hud-card">
+        <div class="hud-label">Time</div>
+        <div class="hud-value" id="timer">60</div>
+      </div>
+    </div>
+
+    <!-- COMBO -->
+    <div id="combo-display"></div>
+
+    <!-- GESTURE HINT -->
+    <div id="gesture-hint">✊ Fist = catch · ✌️ Peace = screenshot · 👋 Wave = boost</div>
+
+    <!-- LOADING -->
+    <div id="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loading-text">INITIALIZING CAMERA...</div>
+    </div>
+
+    <!-- START SCREEN -->
+    <div class="screen" id="start-screen">
+      <div style="font-size:64px;">🎮</div>
+      <div class="screen-title">Gesture Game</div>
+      <div class="screen-sub">
+        Attrape les balles avec ta main !<br/>
+        ✊ Poing = attraper · 👋 Wave = boost · ✌️ Peace = screenshot
+      </div>
+      <button class="btn-game" onclick="startGame()">
+        ▶ START GAME
+      </button>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div class="screen hidden" id="gameover-screen">
+      <div style="font-size:64px;">💀</div>
+      <div class="screen-title">Game Over</div>
+      <div class="screen-score" id="final-score">0</div>
+      <div class="screen-sub" id="final-message">Bien joué !</div>
+      <button class="btn-game" onclick="restartGame()">🔄 REJOUER</button>
+      <button class="btn-game secondary" onclick="window.location.href='../index.html'">
+        ← RETOUR
+      </button>
+    </div>
+
+  </div>
+
+  <script src="../modules/hands.js"></script>
+  <script src="../modules/gestures.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

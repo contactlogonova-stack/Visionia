@@ -7,7 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  
+<link rel="stylesheet" href="style.css"/>
+<!-- AJOUTE CES LIGNES -->
+<script src="modules/pose.js" defer></script>
+<script src="modules/hands.js" defer></script>
+<script src="modules/gestures.js" defer></script>
+<script src="modules/speed.js" defer></script>
 </head>
 <body>
 
@@ -122,63 +128,82 @@
           </div>
         </div>
       </section>
+<!-- CONTROLS PANEL -->
+<section class="controls-panel">
 
-      <!-- CONTROLS PANEL -->
-      <section class="controls-panel">
+  <!-- Actions Card -->
+  <div class="card">
+    <div class="btn-group">
+      <button id="toggle-btn" class="btn btn-start" onclick="toggleDetection()">
+        <span class="material-symbols-outlined">power_settings_new</span>
+        START DETECTION
+      </button>
+      <button class="btn btn-secondary" onclick="switchCamera()">
+        <span class="material-symbols-outlined">flip_camera_android</span>
+        SWITCH CAMERA
+      </button>
+      <button class="btn btn-secondary" onclick="captureScreenshot()">
+        <span class="material-symbols-outlined">photo_camera</span>
+        CAPTURE SCREENSHOT
+      </button>
+      <button class="btn btn-secondary" onclick="window.open('game/index.html','_blank')">
+        <span class="material-symbols-outlined">sports_esports</span>
+        OPEN GAME
+      </button>
+    </div>
 
-        <!-- Actions Card -->
-        <div class="card">
-          <div class="btn-group">
-            <button id="toggle-btn" class="btn btn-start" onclick="toggleDetection()">
-              <span class="material-symbols-outlined">power_settings_new</span>
-              START DETECTION
-            </button>
-            <button class="btn btn-secondary" onclick="switchCamera()">
-  <span class="material-symbols-outlined">flip_camera_android</span>
-  SWITCH CAMERA
-</button>
-            <button class="btn btn-secondary" onclick="captureScreenshot()">
-              <span class="material-symbols-outlined">photo_camera</span>
-              CAPTURE SCREENSHOT
-            </button>
-          </div>
+    <div class="slider-group">
+      <div class="slider-header">
+        <label class="slider-label">CONFIDENCE THRESHOLD</label>
+        <span class="slider-val" id="threshold-val">75%</span>
+      </div>
+      <input type="range" id="threshold" min="0" max="100" value="75" class="slider"
+        oninput="document.getElementById('threshold-val').textContent = this.value + '%'"/>
+    </div>
 
-          <div class="slider-group">
-            <div class="slider-header">
-              <label class="slider-label">CONFIDENCE THRESHOLD</label>
-              <span class="slider-val" id="threshold-val">75%</span>
-            </div>
-            <input type="range" id="threshold" min="0" max="100" value="75" class="slider"
-              oninput="document.getElementById('threshold-val').textContent = this.value + '%'"/>
-          </div>
+    <div class="modules-group">
+      <div class="modules-title">DETECTION MODULES</div>
+      <label class="module-toggle">
+        <span>Objects (COCO-SSD)</span>
+        <input type="checkbox" id="toggle-objects" checked/>
+      </label>
+      <label class="module-toggle">
+        <span>Wellbeing</span>
+        <input type="checkbox" id="toggle-wellness" checked/>
+      </label>
+      <label class="module-toggle">
+        <span>Pose Skeleton</span>
+        <input type="checkbox" id="toggle-pose" checked/>
+      </label>
+      <label class="module-toggle">
+        <span>Hand Tracking</span>
+        <input type="checkbox" id="toggle-hands" checked/>
+      </label>
+      <label class="module-toggle">
+        <span>Gesture Control</span>
+        <input type="checkbox" id="toggle-gestures" checked/>
+      </label>
+      <label class="module-toggle">
+        <span>Speed Tracker</span>
+        <input type="checkbox" id="toggle-speed" checked/>
+      </label>
+    </div>
+  </div>
 
-          <div class="modules-group">
-            <div class="modules-title">DETECTION MODULES</div>
-            <label class="module-toggle">
-              <span>Objects (COCO-SSD)</span>
-              <input type="checkbox" id="toggle-objects" checked/>
-            </label>
-            <label class="module-toggle">
-              <span>Wellbeing (Face-API)</span>
-              <input type="checkbox" id="toggle-wellness" checked/>
-            </label>
-          </div>
-        </div>
+  <!-- Objects List Card -->
+  <div class="card objects-card">
+    <h3 class="card-title">
+      <span class="material-symbols-outlined">list</span>
+      DETECTED OBJECTS
+    </h3>
+    <div id="objects-list" class="objects-list">
+      <div class="objects-empty">
+        <span class="objects-empty-text">SCANNING FOR OBJECTS...</span>
+      </div>
+    </div>
+  </div>
 
-        <!-- Objects List Card -->
-        <div class="card objects-card">
-          <h3 class="card-title">
-            <span class="material-symbols-outlined">list</span>
-            DETECTED OBJECTS
-          </h3>
-          <div id="objects-list" class="objects-list">
-            <div class="objects-empty">
-              <span class="objects-empty-text">SCANNING FOR OBJECTS...</span>
-            </div>
-          </div>
-        </div>
-
-      </section>
+</section>
     </div>
 
     <!-- MOBILE BOTTOM NAV -->
@@ -202,7 +227,8 @@
     </nav>
 
   </main>
-
-  <script src="app.js"></script>
+<script src="app.js"></script>
+<!-- AJOUTE -->
+<div id="gesture-badge" style="display:none"></div>
 </body>
 </html>
